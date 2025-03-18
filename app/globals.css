@@ -1,4 +1,77 @@
-:root {
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap");
+
+body {
+  font-family: "Nunito";
+}
+nav {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  margin: 10px auto 20px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+nav .logo {
+  margin-right: auto;
+}
+nav .logout {
+  margin-left: 12px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 7px;
+  background-color: black;
+  color: white;
+}
+
+.meinen {
+  align-items: center;
+  justify-items: center;
+  padding: 5%;
+  max-width: auto;
+}
+
+.formen {
+  align-items: center;
+  justify-items: center;
+}
+
+.inputbox {
+  width: 100%;
+  border-color: black;
+  border-radius: 5px;
+  border-width: 1px;
+  padding: 10px;
+}
+
+.button {
+  margin: 2px;
+  padding: 7px;
+  border-radius: 5px;
+  border-width: 2px;
+  width: auto;
+}
+
+.loginbutton {
+  align-items: center;
+  justify-items: center;
+}
+
+.labelmail {
+  margin: 2px;
+  padding-right: 39px;
+  padding-bottom: 5px;
+}
+.labelpass {
+  margin: 2px;
+  padding-right: 15px;
+  padding-bottom: 5px;
+}
+
+.area {
+  padding: 5px;
+}
+
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -39,4 +112,4 @@ a {
   html {
     color-scheme: dark;
   }
-}
+} */

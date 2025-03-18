@@ -17,38 +17,45 @@ export default function Registration() {
       email,
       password,
     });
-    router.push("/app/page.js");
+    router.push("/login");
   };
 
   return (
-    <div>
+    <div className="meinen">
       <form onSubmit={handleSubmit}>
-        <div>
-          <h2>Register</h2>
+        <div className="area">
+          <h1>Register</h1>
           <label>Name</label>
           <input
             type="text"
             placeholder="John Doe"
             onChange={(e) => setName(e.target.value)}
+            className="inputbox"
           ></input>
         </div>
-        <div>
+        <div className="area">
           <label>E-Mail</label>
           <input
             type="email"
             placeholder="johndoe@gmail.com"
             onChange={(e) => setEmail(e.target.value)}
+            className="inputbox"
           ></input>
         </div>
-        <div>
+        <div className="area">
           <label>Password</label>
           <input
             type="password"
             placeholder="*******"
             onChange={(e) => setPassword(e.target.value)}
+            className="inputbox"
           ></input>
         </div>
-        <button type="submit">Register</button>
+        <div className="loginbutton">
+          <button type="submit" className="button">
+            Register
+          </button>
+        </div>
       </form>
     </div>
   );

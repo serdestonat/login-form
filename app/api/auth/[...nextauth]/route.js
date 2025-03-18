@@ -15,17 +15,23 @@ const handler = NextAuth({
       return session;
     },
 
-    async signIn({ account, profile, user, credentials }) {
+    async signIn({ profile }) {
       try {
         await connectToDB();
-        const checkEmail = await user.find({ email: user.email });
 
-        if (checkEmail.length == 0) {
-          await user.insertMany({ name: user.name, email: user.email });
-          return true;
+        // Kullanıcıyı veritabanında ara
+        const existingUser = await User.findOne({ email: profile.email });
+
+        // Eğer kullanıcı yoksa, yeni bir kullanıcı oluştur
+        if (!existingUser) {
+          await User.create({
+            name: profile.name,
+            email: profile.email,
+          });
         }
+        return true;
       } catch (e) {
-        console.log(e);
+        console.error("google sign-in error:", e);
         return false;
       }
     },

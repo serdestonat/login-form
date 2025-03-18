@@ -1,11 +1,9 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { session } from "next-auth";
-import { useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 
@@ -26,46 +24,58 @@ export default function Login() {
     }
   };
 
-  if (session) {
-    router.push("/homePage");
-    return null;
+  useEffect(() => {
+    if (session === "authenticated") {
+      router.push("/homePage");
+    }
+  }, [session, router]);
+
+  if (session === "loading") {
+    return <div>Loading...</div>; // Show loading state if session is loading
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="meinen">
+      <form onSubmit={handleSubmit} className="formen">
         <h1>Login</h1>
-        <div>
-          <label>E-Mail</label>
+        <div className="area">
+          <label className="labelmail">E-Mail</label>
           <input
             type="email"
             placeholder="johndoe@gmail.com"
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="inputbox"
           ></input>
         </div>
-        <div>
-          <label>Password</label>
+        <div className="area">
+          <label className="labelpass">Password</label>
           <input
             type="password"
             placeholder="*******"
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="inputbox"
           ></input>
-          <button type="submit">Login</button>
+        </div>
+        <div className="loginbutton">
+          <button type="submit" className="button">
+            Login
+          </button>
         </div>
       </form>
 
-      <p>Do not have an account ? Sign up here.</p>
-      <button>
+      <p>Do not have an account ?</p>
+      <button className="button">
         <Link href="/register">Sign Up</Link>
       </button>
 
-      <h2>Login With Google</h2>
+      <h4>Login With Google</h4>
 
       <button
+        className="button"
         onClick={() => {
-          signIn("google");
+          signIn("google", { callbackUrl: "/homePage" });
         }}
       >
         <FcGoogle /> Sign In With Google

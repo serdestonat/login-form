@@ -3,7 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { disconnectFromDB } from "@/utils/database";
 
-const Navbar = () => {
+const Navbar = ({ navbarColor }) => {
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -35,7 +35,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav>
+    <nav style={{ backgroundColor: navbarColor }}>
       <div className="logo">
         <h1>Poll</h1>
       </div>

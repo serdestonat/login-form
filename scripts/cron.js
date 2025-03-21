@@ -16,20 +16,19 @@ const createPoll = async () => {
   console.log("Yeni anket oluşturuldu:", newPoll);
 };
 
-// Cron job'u başlat
-const startCronJob = () => {
+// Cron job'u başlatma fonksiyonu
+export const startCronJob = async () => {
   console.log("Cron job başlatılıyor...");
 
   // Her çarşamba gece yarısı yeni anket başlat
-  cron.schedule("0 0 * * 3", async () => {
-    console.log("Çarşamba gece yarısı yeni anket başlatılıyor...");
-    await createPoll();
-  });
+  // cron.schedule("0 0 * * 3", async () => {
+  //   console.log("Çarşamba gece yarısı yeni anket başlatılıyor...");
+  //   await createPoll();
+  // });
+  await createPoll();
 
   console.log("Cron job başlatıldı.");
 };
 
 // Sunucu başlatıldığında cron job'u başlat
 startCronJob();
-
-export default startCronJob;

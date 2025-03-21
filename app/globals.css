@@ -51,9 +51,17 @@ nav .logout {
   width: auto;
 }
 
+.button:hover {
+  cursor: pointer;
+}
+
 .loginbutton {
   align-items: center;
   justify-items: center;
+}
+
+.loginbutton:hover {
+  cursor: pointer;
 }
 
 .labelmail {

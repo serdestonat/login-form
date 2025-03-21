@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
+import Link from "next/link";
 
 export default function Registration() {
   const [name, setName] = useState("");
@@ -54,6 +55,9 @@ export default function Registration() {
         <div className="loginbutton">
           <button type="submit" className="button">
             Register
+          </button>
+          <button type="button" className="button">
+            <Link href="/login">Cancel</Link>
           </button>
         </div>
       </form>

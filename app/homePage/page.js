@@ -44,10 +44,12 @@ const Page = () => {
 
   const handleVote = async (button) => {
     try {
+      console.log(session);
+      debugger;
       const response = await fetch("/api/vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: session.user.id, button }),
+        body: JSON.stringify({ user_id: session.user.email, button }),
       });
 
       if (!response.ok) {

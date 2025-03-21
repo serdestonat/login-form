@@ -7,14 +7,18 @@ const VoteSchema = new Schema({
     required: true,
   },
   user_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: "User",
     required: true,
   },
   option: {
-    type: Date,
-    default: Date.now,
+    type: String,
+    required: true,
   },
+  // vote_date: {
+  //   type: Date,
+  //   default: Date.now, // Oy tarihini kaydetmek için ayrı bir alan
+  // },
 });
 
 const Vote = models.Vote || model("Vote", VoteSchema);

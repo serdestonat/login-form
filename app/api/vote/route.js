@@ -2,67 +2,65 @@ import { connectToDB } from "@/utils/database";
 import Vote from "@/models/vote";
 import Poll from "@/models/poll";
 import User from "@/models/user"; // User modelini import et
+import { NextResponse } from "next/server";
 
-export async function POST(request) {
+export async function POST(req) {
   try {
-    const { user_id, button } = await request.json();
+    await connectToDB(); // MongoDB bağlantısını sağla
 
-    console.log("Gelen user_id:", user_id); // Gelen user_id'yi kontrol edin
-    console.log("Gelen button:", button); // Gelen button değerini kontrol edin
+    const body = await req.json();
+    const { user_id, button } = body;
 
-    await connectToDB();
-
-    // Kullanıcıyı e-posta ile bul
-    const user = await User.findOne({ email: user_id });
-    if (!user) {
-      console.error("Kullanıcı bulunamadı:", user_id);
-      return new Response(JSON.stringify({ error: "Kullanıcı bulunamadı." }), {
-        status: 404,
-      });
+    if (!user_id || !button) {
+      return NextResponse.json(
+        { error: "Kullanıcı ID veya oy bilgisi eksik." },
+        { status: 400 }
+      );
     }
+
+    console.log("Gelen user_id:", user_id);
+    console.log("Gelen oy butonu:", button);
 
     // Aktif anketi bul
     const activePoll = await Poll.findOne({ status: "active" });
+    console.log("Aktif anket:", activePoll);
     if (!activePoll) {
-      console.error("Aktif anket bulunamadı.");
-      return new Response(
-        JSON.stringify({ error: "Aktif anket bulunamadı." }),
-        {
-          status: 404, // Aktif anket bulunamadığında 404 döndür
-        }
+      return NextResponse.json(
+        { error: "Aktif anket bulunamadı." },
+        { status: 404 }
       );
     }
 
-    // Son 5 dakikada oy kullanmış mı kontrol et
-    const lastVote = await Vote.findOne({
-      user_id: user_id, // user_id String olarak kullanılıyor
-      vote_date: { $gte: new Date(Date.now() - 5 * 60 * 1000) },
-    });
-
+    // Kullanıcının son oy verme süresini kontrol et (örneğin 5 dakika)
+    const lastVote = await Vote.findOne({ user_id }).sort({ createdAt: -1 });
     if (lastVote) {
-      console.error("Kullanıcı zaten son 5 dakikada oy kullanmış:", user_id);
-      return new Response(
-        JSON.stringify({ error: "5 dakikada bir oy kullanabilirsiniz." }),
-        { status: 400 }
-      );
+      const now = new Date();
+      const lastVoteTime = new Date(lastVote.createdAt);
+      const diffMinutes = (now - lastVoteTime) / (1000 * 60);
+      if (diffMinutes < 5) {
+        return NextResponse.json(
+          { error: "Tekrar oy vermek için beklemelisin." },
+          { status: 403 }
+        );
+      }
     }
 
     // Yeni oyu kaydet
     const newVote = new Vote({
       poll_id: activePoll._id,
-      user_id: user_id, // user_id String olarak kullanılıyor
-      option: button, // option String olarak kullanılıyor
+      user_id,
+      option: button,
     });
-
     await newVote.save();
-    console.log("Oy başarıyla kaydedildi:", newVote);
-    return new Response(JSON.stringify({ message: "Oyunuz kaydedildi." }), {
-      status: 201,
-    });
+
+    return NextResponse.json(
+      { message: "Oy başarıyla kaydedildi." },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("API hatası:", error);
-    return new Response(
-      JSON.stringify({ error: "Sunucu hatası. Lütfen tekrar deneyin." }),
+    console.error("API hata verdi:", error);
+    return NextResponse.json(
+      { error: "Sunucu hatası oluştu." },
       { status: 500 }
     );
   }

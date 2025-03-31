@@ -13,13 +13,17 @@ export async function POST(request) {
 
     await newPoll.save();
     return new Response(
-      JSON.stringify({ message: "Yeni anket başlatıldı.", poll: newPoll }),
-      { status: 201 }
+      JSON.stringify({
+        message: "Anket başarıyla oluşturuldu.",
+        pollId: newPoll._id,
+      }),
+      { status: 201, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error("Anket başlatma hatası:", error);
     return new Response(JSON.stringify({ error: "Anket başlatılamadı." }), {
       status: 500,
+      headers: { "Content-Type": "application/json" },
     });
   }
 }

@@ -3,6 +3,7 @@
 import styles from "@/app/homePage/page.module.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import WarningModal from "@/components/WarningModal";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
@@ -19,16 +20,39 @@ const Page = () => {
   const [totalVotes, setTotalVotes] = useState(0);
   const [navbarColor, setNavbarColor] = useState("");
   const [firstVoteTime, setFirstVoteTime] = useState({});
-  const [lastVoteTime, setLastVoteTime] = useState(null); // Son oy zamanı
-  const [remainingTime, setRemainingTime] = useState(0); // Kalan süre (saniye cinsinden)
+  const [lastVoteTime, setLastVoteTime] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(0);
+  const [warningMessage, setWarningMessage] = useState("");
 
-  // Kalan süreyi hesapla ve güncelle
+  const timeNow = new Date().toLocaleString();
+
+  // Anket oluşturma fonksiyonu
+  const createPoll = async () => {
+    try {
+      const response = await fetch("/api/poll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        console.error("Anket oluşturma başarısız:", response.status);
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Anket oluşturuldu:", data.message);
+    } catch (error) {
+      console.error("Anket oluşturma hatası:", error);
+    }
+  };
+
   useEffect(() => {
+    // Kalan süreyi hesapla ve güncelle
     if (lastVoteTime) {
       const interval = setInterval(() => {
         const now = new Date();
-        const timeDiff = Math.floor((now - lastVoteTime) / 1000); // Geçen süre (saniye)
-        const timeLeft = 300 - timeDiff; // 5 dakika = 300 saniye
+        const timeDiff = Math.floor((now - lastVoteTime) / 1000);
+        const timeLeft = 300 - timeDiff;
 
         if (timeLeft > 0) {
           setRemainingTime(timeLeft);
@@ -43,32 +67,39 @@ const Page = () => {
   }, [lastVoteTime]);
 
   const handleVote = async (button) => {
+    const now = new Date();
+    const lastVote = lastVoteTime ? new Date(lastVoteTime) : null;
+    const diffMinutes = lastVote ? (now - lastVote) / (1000 * 60) : 0;
+
+    if (lastVote && diffMinutes < 5) {
+      setWarningMessage("Süreniz dolmadan tekrar oy kullanamazsınız.");
+      return; // Oy kullanma işlemini durdur
+    }
+
     try {
       console.log(session);
-      debugger;
+
       const response = await fetch("/api/vote", {
-        method: "POST",
+        method: "POST", // GET yerine POST kullanın
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: session.user.email, button }),
+        body: JSON.stringify({ user_id: session.user.email, button }), // body ekleyin
       });
 
       if (!response.ok) {
+        console.log("API yanıt durumu:", response.status);
+        console.log("API URL:", response.url);
         const errorData = await response.json();
         throw new Error(errorData.error || "Oy kullanma işlemi başarısız.");
       }
 
       const data = await response.json();
       console.log(data.message);
-      // Oy sayısını güncelle
       setVotes((prevVotes) => ({
         ...prevVotes,
         [button]: prevVotes[button] + 1,
       }));
-
-      // Toplam oy sayısını güncelle
       setTotalVotes((prevTotal) => prevTotal + 1);
 
-      // İlk oy zamanını kaydet
       if (!firstVoteTime[button]) {
         setFirstVoteTime((prevTimes) => ({
           ...prevTimes,
@@ -76,15 +107,13 @@ const Page = () => {
         }));
       }
 
-      // Son oy zamanını kaydet
-      setLastVoteTime(new Date());
-      setRemainingTime(300); // 5 dakika = 300 saniye
+      setLastVoteTime(now);
+      setRemainingTime(300);
     } catch (error) {
       console.log(error);
     }
   };
 
-  // En çok oy alan butonu belirle ve Navbar rengini güncelle
   useEffect(() => {
     if (totalVotes > 0) {
       const maxVotes = Math.max(...Object.values(votes));
@@ -96,13 +125,11 @@ const Page = () => {
       if (winningButtons.length === 1) {
         winningButton = winningButtons[0];
       } else {
-        // Eşitlik durumunda ilk oy alan butonu seç
         winningButton = winningButtons.reduce((a, b) =>
           firstVoteTime[a] < firstVoteTime[b] ? a : b
         );
       }
 
-      // Navbar rengini güncelle
       switch (winningButton) {
         case "button1":
           setNavbarColor("brown");
@@ -161,6 +188,11 @@ const Page = () => {
           Option 5
         </button>
       </div>
+      <WarningModal
+        isOpen={!!warningMessage}
+        message={warningMessage}
+        onClose={() => setWarningMessage("")}
+      />
       <Footer remainingTime={remainingTime} />
     </>
   );

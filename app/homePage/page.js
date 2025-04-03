@@ -47,6 +47,62 @@ const Page = () => {
   };
 
   useEffect(() => {
+    // Sayfa yüklendiğinde localStorage'dan son oy zamanını yükle
+    const savedLastVoteTime = localStorage.getItem("lastVoteTime");
+    if (savedLastVoteTime) {
+      setLastVoteTime(new Date(savedLastVoteTime));
+
+      // Kalan süreyi hesapla
+      const now = new Date();
+      const lastVote = new Date(savedLastVoteTime);
+      const timeDiff = Math.floor((now - lastVote) / 1000);
+      const timeLeft = 300 - timeDiff;
+
+      if (timeLeft > 0) {
+        setRemainingTime(timeLeft);
+      }
+    }
+
+    const initializeApp = async () => {
+      try {
+        // Aktif anket kontrolü
+        const pollCheck = await fetch("/api/poll", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!pollCheck.ok) {
+          throw new Error("Anket kontrolü başarısız");
+        }
+
+        const pollData = await pollCheck.json();
+
+        if (!pollData.exists) {
+          await createPoll();
+        }
+
+        // Oyları yükle
+        const votesResponse = await fetch("/api/votes");
+        if (votesResponse.ok) {
+          const voteData = await votesResponse.json();
+          setVotes({
+            button1: voteData.button1 || 0,
+            button2: voteData.button2 || 0,
+            button3: voteData.button3 || 0,
+            button4: voteData.button4 || 0,
+            button5: voteData.button5 || 0,
+          });
+          setTotalVotes(Object.values(voteData).reduce((a, b) => a + b, 0));
+        }
+      } catch (error) {
+        console.error("Başlatma hatası:", error);
+      }
+    };
+
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
     // Kalan süreyi hesapla ve güncelle
     if (lastVoteTime) {
       const interval = setInterval(() => {
@@ -78,7 +134,6 @@ const Page = () => {
 
     try {
       console.log(session);
-
       const response = await fetch("/api/vote", {
         method: "POST", // GET yerine POST kullanın
         headers: { "Content-Type": "application/json" },
@@ -108,6 +163,7 @@ const Page = () => {
       }
 
       setLastVoteTime(now);
+      localStorage.setItem("lastVoteTime", now.toString());
       setRemainingTime(300);
     } catch (error) {
       console.log(error);

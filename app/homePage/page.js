@@ -47,22 +47,6 @@ const Page = () => {
   };
 
   useEffect(() => {
-    // Sayfa yüklendiğinde localStorage'dan son oy zamanını yükle
-    const savedLastVoteTime = localStorage.getItem("lastVoteTime");
-    if (savedLastVoteTime) {
-      setLastVoteTime(new Date(savedLastVoteTime));
-
-      // Kalan süreyi hesapla
-      const now = new Date();
-      const lastVote = new Date(savedLastVoteTime);
-      const timeDiff = Math.floor((now - lastVote) / 1000);
-      const timeLeft = 300 - timeDiff;
-
-      if (timeLeft > 0) {
-        setRemainingTime(timeLeft);
-      }
-    }
-
     const initializeApp = async () => {
       try {
         // Aktif anket kontrolü
@@ -102,47 +86,75 @@ const Page = () => {
     initializeApp();
   }, []);
 
+  // Kullanıcı değiştiğinde veya sayfa yüklendiğinde geri sayımı ayarla
   useEffect(() => {
-    // Kalan süreyi hesapla ve güncelle
-    if (lastVoteTime) {
-      const interval = setInterval(() => {
-        const now = new Date();
-        const timeDiff = Math.floor((now - lastVoteTime) / 1000);
-        const timeLeft = 300 - timeDiff;
+    if (!session?.user?.email) return;
 
-        if (timeLeft > 0) {
-          setRemainingTime(timeLeft);
-        } else {
-          setRemainingTime(0);
-          clearInterval(interval);
-        }
+    const userLastVotes = JSON.parse(
+      localStorage.getItem("userLastVotes") || "{}"
+    );
+    const lastVoteTime = userLastVotes[session.user.email]
+      ? new Date(userLastVotes[session.user.email])
+      : null;
+
+    if (lastVoteTime) {
+      const now = new Date();
+      const timeDiff = Math.floor((now - lastVoteTime) / 1000);
+      const timeLeft = 300 - timeDiff;
+
+      if (timeLeft > 0) {
+        setRemainingTime(timeLeft);
+      } else {
+        setRemainingTime(0);
+      }
+    }
+  }, [session]);
+
+  // Geri sayımı güncelle
+  useEffect(() => {
+    if (remainingTime > 0) {
+      const interval = setInterval(() => {
+        setRemainingTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [lastVoteTime]);
+  }, [remainingTime]);
 
   const handleVote = async (button) => {
-    const now = new Date();
-    const lastVote = lastVoteTime ? new Date(lastVoteTime) : null;
-    const diffMinutes = lastVote ? (now - lastVote) / (1000 * 60) : 0;
+    if (!session?.user?.email) return;
 
-    if (lastVote && diffMinutes < 5) {
+    const now = new Date();
+    const userEmail = session.user.email;
+
+    // Kullanıcının son oy zamanını al
+    const userLastVotes = JSON.parse(
+      localStorage.getItem("userLastVotes") || "{}"
+    );
+    const lastVoteTime = userLastVotes[userEmail]
+      ? new Date(userLastVotes[userEmail])
+      : null;
+    const diffSeconds = lastVoteTime ? (now - lastVoteTime) / 1000 : 0;
+
+    if (lastVoteTime && diffSeconds < 300) {
       setWarningMessage("Süreniz dolmadan tekrar oy kullanamazsınız.");
-      return; // Oy kullanma işlemini durdur
+      return;
     }
 
     try {
-      console.log(session);
       const response = await fetch("/api/vote", {
-        method: "POST", // GET yerine POST kullanın
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: session.user.email, button }), // body ekleyin
+        body: JSON.stringify({ user_id: userEmail, button }),
       });
 
       if (!response.ok) {
-        console.log("API yanıt durumu:", response.status);
-        console.log("API URL:", response.url);
         const errorData = await response.json();
         throw new Error(errorData.error || "Oy kullanma işlemi başarısız.");
       }
@@ -162,8 +174,12 @@ const Page = () => {
         }));
       }
 
-      setLastVoteTime(now);
-      localStorage.setItem("lastVoteTime", now.toString());
+      // Kullanıcının oy zamanını güncelle
+      const updatedLastVotes = {
+        ...userLastVotes,
+        [userEmail]: now.toString(),
+      };
+      localStorage.setItem("userLastVotes", JSON.stringify(updatedLastVotes));
       setRemainingTime(300);
     } catch (error) {
       console.log(error);

@@ -35,7 +35,7 @@ const Navbar = ({ navbarColor }) => {
   };
 
   return (
-    <nav style={{ backgroundColor: navbarColor }}>
+    <nav style={{ backgroundColor: navbarColor, borderRadius: "8px" }}>
       <div className="logo">
         <h1>Poll</h1>
       </div>

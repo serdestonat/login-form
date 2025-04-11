@@ -2,6 +2,7 @@
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { disconnectFromDB } from "@/utils/database";
+import Image from "next/image";
 
 const Navbar = ({ navbarColor }) => {
   const router = useRouter();
@@ -37,7 +38,13 @@ const Navbar = ({ navbarColor }) => {
   return (
     <nav style={{ backgroundColor: navbarColor, borderRadius: "8px" }}>
       <div className="logo">
-        <h1>Poll</h1>
+        <Image
+          src="/waiting-sign.png"
+          alt="Sand Hourglass Logo"
+          width={65} // Orijinal resminizin genişlik/yükseklik oranına göre ayarlayın
+          height={30} // "Poll" yazısıyla aynı yükseklikte olacak şekilde ayarlayın
+          className="logo-image"
+        />
       </div>
       <button type="button" className="logout" onClick={handleLogout}>
         Log Out

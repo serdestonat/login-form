@@ -1,5 +1,6 @@
 "use client";
 
+import { useMediaQuery } from "react-responsive";
 import styles from "@/app/homePage/page.module.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -25,6 +26,7 @@ const Page = () => {
   const [warningMessage, setWarningMessage] = useState("");
 
   const timeNow = new Date().toLocaleString();
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   // Anket oluşturma fonksiyonu
   const createPoll = async () => {
@@ -227,7 +229,7 @@ const Page = () => {
   return (
     <>
       <Navbar navbarColor={navbarColor} />
-      <div className={styles.header}>Home Page</div>
+      <div className={styles.header}>Poll Page</div>
       <div className={styles.container}>
         <button
           className={styles.button1}

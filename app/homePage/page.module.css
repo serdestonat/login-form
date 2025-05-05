@@ -7,7 +7,7 @@
 .container {
   display: flex;
   justify-content: center;
-  margin: 80px;
+  margin: 38px 80px 80px 80px;
   gap: 20px;
 }
 

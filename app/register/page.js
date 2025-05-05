@@ -18,7 +18,7 @@ export default function Registration() {
       email,
       password,
     });
-    router.push("/login");
+    router.push("/");
   };
 
   return (
@@ -56,9 +56,9 @@ export default function Registration() {
           <button type="submit" className="button">
             Register
           </button>
-          <button type="button" className="button">
-            <Link href="/login">Cancel</Link>
-          </button>
+          <Link href="/" className="button">
+            Cancel
+          </Link>
         </div>
       </form>
     </div>

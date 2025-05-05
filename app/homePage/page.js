@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import WarningModal from "@/components/WarningModal";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-
+import { useRouter } from "next/navigation";
 const Page = () => {
   const [votes, setVotes] = useState({
     button1: 0,
@@ -17,16 +17,41 @@ const Page = () => {
     button5: 0,
   });
 
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [totalVotes, setTotalVotes] = useState(0);
   const [navbarColor, setNavbarColor] = useState("");
   const [firstVoteTime, setFirstVoteTime] = useState({});
   const [lastVoteTime, setLastVoteTime] = useState(null);
   const [remainingTime, setRemainingTime] = useState(0);
   const [warningMessage, setWarningMessage] = useState("");
+  const [showAuthWarning, setShowAuthWarning] = useState(false);
 
   const timeNow = new Date().toLocaleString();
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      // localStorage'da logout flag kontrolü
+      const isLoggingOut = localStorage.getItem("isLoggingOut");
+
+      if (!isLoggingOut) {
+        setShowAuthWarning(true);
+        const timer = setTimeout(() => {
+          router.push("/");
+        }, 3000);
+        return () => clearTimeout(timer);
+      } else {
+        // Logout durumunda flag'i temizle
+        localStorage.removeItem("isLoggingOut");
+      }
+    }
+  }, [status, router]);
+
+  const handleCloseAuthWarning = () => {
+    setShowAuthWarning(false);
+    router.push("/");
+  };
 
   // Anket oluşturma fonksiyonu
   const createPoll = async () => {
@@ -262,6 +287,13 @@ const Page = () => {
           Option 5
         </button>
       </div>
+
+      <WarningModal
+        isOpen={showAuthWarning}
+        message="Kullanıcı girişi yapmadan bu sayfaya giremezsiniz."
+        onClose={handleCloseAuthWarning}
+      />
+
       <WarningModal
         isOpen={!!warningMessage}
         message={warningMessage}

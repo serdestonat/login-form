@@ -13,6 +13,9 @@ const Navbar = ({ navbarColor }) => {
     console.log("Logout initiated");
 
     try {
+      // Logout flag'ini localStorage'a kaydet
+      localStorage.setItem("isLoggingOut", "true");
+
       // Oturumu sonlandır
       await signOut({ redirect: false });
       console.log("User signed out successfully");
@@ -29,7 +32,7 @@ const Navbar = ({ navbarColor }) => {
       console.log("Logout API request successful");
 
       // Kullanıcıyı login sayfasına yönlendir
-      router.push("/login");
+      router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -46,7 +49,12 @@ const Navbar = ({ navbarColor }) => {
           className="logo-image"
         />
       </div>
-      <button type="button" className="logout" onClick={handleLogout}>
+      <button
+        type="button"
+        className="logout"
+        onClick={handleLogout}
+        style={{ marginBottom: "12px" }}
+      >
         Log Out
       </button>
     </nav>

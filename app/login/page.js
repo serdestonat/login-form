@@ -66,7 +66,7 @@ export default function Login() {
       </form>
 
       <p>Do not have an account ?</p>
-      <button className="button">
+      <button className="registerbutton">
         <Link href="/register">Sign Up</Link>
       </button>
 
@@ -74,11 +74,12 @@ export default function Login() {
 
       <button
         className="button"
+        data-provider="google"
         onClick={() => {
           signIn("google", { callbackUrl: "/homePage" });
         }}
       >
-        <FcGoogle /> Sign In With Google
+        <FcGoogle size={20} /> Sign In With Google
       </button>
     </div>
   );

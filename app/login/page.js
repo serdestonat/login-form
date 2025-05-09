@@ -20,7 +20,7 @@ export default function Login() {
       password,
     });
     if (response.data.message === "success") {
-      router.push("/homePage");
+      router.push("/homePage?fromLogin=true");
     }
   };
 
@@ -35,52 +35,54 @@ export default function Login() {
   }
 
   return (
-    <div className="meinen">
-      <form onSubmit={handleSubmit} className="formen">
-        <h1>Login</h1>
-        <div className="area">
-          <label className="labelmail">E-Mail</label>
-          <input
-            type="email"
-            placeholder="johndoe@gmail.com"
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="inputbox"
-          ></input>
-        </div>
-        <div className="area">
-          <label className="labelpass">Password</label>
-          <input
-            type="password"
-            placeholder="*******"
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="inputbox"
-          ></input>
-        </div>
-        <div className="loginbutton">
-          <button type="submit" className="button">
-            Login
-          </button>
-        </div>
-      </form>
+    <div className="not-found-container">
+      <div className="meinen">
+        <form onSubmit={handleSubmit} className="formen">
+          <h1>Login</h1>
+          <div className="area">
+            <label className="labelmail">E-Mail</label>
+            <input
+              type="email"
+              placeholder="johndoe@gmail.com"
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="inputbox"
+            ></input>
+          </div>
+          <div className="area">
+            <label className="labelpass">Password</label>
+            <input
+              type="password"
+              placeholder="*******"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="inputbox"
+            ></input>
+          </div>
+          <div className="loginbutton">
+            <button type="submit" className="button">
+              Login
+            </button>
+          </div>
+        </form>
 
-      <p>Do not have an account ?</p>
-      <button className="registerbutton">
-        <Link href="/register">Sign Up</Link>
-      </button>
+        <p>Do not have an account ?</p>
+        <button className="registerbutton">
+          <Link href="/register">Sign Up</Link>
+        </button>
 
-      <h4>Login With Google</h4>
+        <h4>Login With Google</h4>
 
-      <button
-        className="button"
-        data-provider="google"
-        onClick={() => {
-          signIn("google", { callbackUrl: "/homePage" });
-        }}
-      >
-        <FcGoogle size={20} /> Sign In With Google
-      </button>
+        <button
+          className="button"
+          data-provider="google"
+          onClick={() => {
+            signIn("google", { callbackUrl: "/homePage" });
+          }}
+        >
+          <FcGoogle size={20} /> Sign In With Google
+        </button>
+      </div>
     </div>
   );
 }

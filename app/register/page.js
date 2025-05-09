@@ -22,45 +22,47 @@ export default function Registration() {
   };
 
   return (
-    <div className="meinen">
-      <form onSubmit={handleSubmit}>
-        <div className="area">
-          <h1>Register</h1>
-          <label>Name</label>
-          <input
-            type="text"
-            placeholder="John Doe"
-            onChange={(e) => setName(e.target.value)}
-            className="inputbox"
-          ></input>
-        </div>
-        <div className="area">
-          <label>E-Mail</label>
-          <input
-            type="email"
-            placeholder="johndoe@gmail.com"
-            onChange={(e) => setEmail(e.target.value)}
-            className="inputbox"
-          ></input>
-        </div>
-        <div className="area">
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="*******"
-            onChange={(e) => setPassword(e.target.value)}
-            className="inputbox"
-          ></input>
-        </div>
-        <div className="loginbutton">
-          <button type="submit" className="button">
-            Register
-          </button>
-          <Link href="/" className="button">
-            Cancel
-          </Link>
-        </div>
-      </form>
+    <div className="not-found-container">
+      <div className="meinen">
+        <form onSubmit={handleSubmit}>
+          <div className="area">
+            <h1>Register</h1>
+            <label>Name</label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              onChange={(e) => setName(e.target.value)}
+              className="inputbox"
+            ></input>
+          </div>
+          <div className="area">
+            <label>E-Mail</label>
+            <input
+              type="email"
+              placeholder="johndoe@gmail.com"
+              onChange={(e) => setEmail(e.target.value)}
+              className="inputbox"
+            ></input>
+          </div>
+          <div className="area">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="*******"
+              onChange={(e) => setPassword(e.target.value)}
+              className="inputbox"
+            ></input>
+          </div>
+          <div className="loginbutton">
+            <button type="submit" className="button">
+              Register
+            </button>
+            <Link href="/" className="button">
+              Cancel
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

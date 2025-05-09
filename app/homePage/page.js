@@ -31,20 +31,19 @@ const Page = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      // localStorage'da logout flag kontrolü
-      const isLoggingOut = localStorage.getItem("isLoggingOut");
+    const isLoggingOut = localStorage.getItem("isLoggingOut");
+    const urlHasRedirectFlag = window.location.search.includes("fromLogin");
 
-      if (!isLoggingOut) {
-        setShowAuthWarning(true);
-        const timer = setTimeout(() => {
-          router.push("/");
-        }, 3000);
-        return () => clearTimeout(timer);
-      } else {
-        // Logout durumunda flag'i temizle
-        localStorage.removeItem("isLoggingOut");
-      }
+    if (status === "unauthenticated" && !isLoggingOut && !urlHasRedirectFlag) {
+      setShowAuthWarning(true);
+      const timer = setTimeout(() => {
+        router.push("/");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+
+    if (isLoggingOut) {
+      localStorage.removeItem("isLoggingOut");
     }
   }, [status, router]);
 

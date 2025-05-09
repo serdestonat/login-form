@@ -187,6 +187,50 @@ h4 {
   color: #333;
 }
 
+.not-found-container {
+  position: fixed; /* Sayfa boyunca sabit kalarak tüm alanı kaplar */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background: url("/background-404.png") no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 9999; /* Gerekirse diğer içeriklerin üstünde tutar */
+}
+
+.not-found-content {
+  position: relative;
+  z-index: 2;
+  color: black;
+  text-align: center;
+}
+
+/* Responsive ayarlar */
+@media (max-width: 768px) {
+  .not-found-content h1 {
+    font-size: 4rem !important;
+  }
+
+  .not-found-container {
+    background: url("/background-404-mobile.png") no-repeat center center fixed;
+    background-size: cover;
+  }
+}
+
+/* Yatay (landscape) modda kaydırmaya izin ver */
+@media screen and (orientation: landscape) {
+  .not-found-container {
+    position: absolute; /* fixed yerine absolute kullanılırsa daha doğal davranır */
+    height: auto;
+    min-height: 100dvh;
+    overflow: auto;
+  }
+}
+
 /* :root {
   --background: #ffffff;
   --foreground: #171717;
